@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "SQLele",
+        "repositoryURL": "https://github.com/ahti/SQLele.git",
+        "state": {
+          "branch": "master",
+          "revision": "8d54642ef5704e2eaf489c09592b2468220255b5",
+          "version": null
+        }
+      }
+    ]
+  },
+  "version": 1
+}
