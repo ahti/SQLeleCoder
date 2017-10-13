@@ -70,11 +70,42 @@ extension Statement {
             throw e
         }
     }
+
+
+    public func bind<T: Encodable>(_ index: Int, to obj: T?, userInfo: [CodingUserInfoKey: Any] = [:]) throws {
+        guard let obj = obj else {
+            try bindNull(index)
+            return
+        }
+        let encoder = StatementEncoder(statement: self, prefix: nil, userInfo: userInfo)
+        try encoder.bindEncodable(obj, key: ParameterIndex(index))
+    }
+
+    public func bind<T: Encodable>(_ name: String, to obj: T?, userInfo: [CodingUserInfoKey: Any] = [:]) throws {
+        guard let obj = obj else {
+            try bindNull(name)
+            return
+        }
+        let encoder = StatementEncoder(statement: self, prefix: nil, userInfo: userInfo)
+        try encoder.bindEncodable(obj, key: ParameterName(name))
+    }
 }
 
 extension Row {
     public func decode<T: Decodable>(userInfo: [CodingUserInfoKey: Any] = [:]) throws -> T {
         let c = RowDecoder(row: self, userInfo: userInfo)
         return try T(from: c)
+    }
+
+    public func column<T: Decodable>(_ index: Int, userInfo: [CodingUserInfoKey: Any] = [:]) throws -> T? {
+        guard !columnIsNull(index) else { return nil }
+        let c = RowDecoder(row: self, userInfo: userInfo)
+        return try c.decode(key: ParameterIndex(index)) as T
+    }
+
+    public func column<T: Decodable>(_ name: String, userInfo: [CodingUserInfoKey: Any] = [:]) throws -> T? {
+        guard try !columnIsNull(name) else { return nil }
+        let c = RowDecoder(row: self, userInfo: userInfo)
+        return try c.decode(key: ParameterName(name)) as T
     }
 }

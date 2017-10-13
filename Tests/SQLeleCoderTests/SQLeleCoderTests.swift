@@ -54,13 +54,19 @@ extension Nested: Equatable {
 
 struct NilError: Error {}
 
-func assertNoThrow<T>(_ c: @autoclosure () throws -> T) -> T {
+func assertNoThrow<T>(_ c: @autoclosure () throws -> T, file: StaticString = #file, line: UInt = #line) -> T {
     do {
         return try c()
     } catch let e {
-        XCTFail("caught error \(e)")
+        XCTFail("caught error \(e)", file: file, line: line)
         fatalError()
     }
+}
+
+enum CodableEnum: String, Codable {
+    case onOneHand
+    case onTheOther
+    case wellActually
 }
 
 struct DataAndDate: Codable {
@@ -75,6 +81,7 @@ class SQLeleCoderTests: XCTestCase {
         super.setUp()
         try! db.run("create table Test (id text primary key, name text, age numeric not null, something real, arrr text not null, nested text)")
         try! db.run("create table DataAndDate (data not null, date not null)")
+        try! db.run("create table Stuff (a, b, c, d)")
     }
 
     override func tearDown() {
@@ -189,6 +196,24 @@ class SQLeleCoderTests: XCTestCase {
         }
     }
 
+    func testBindAndFetchEncodables() throws {
+        let i = assertNoThrow(try db.prepare("insert into Stuff values (?, :b, :c, :d)"))
+        assertNoThrow(try i.bind(1, to: Date(timeIntervalSince1970: 16)))
+        assertNoThrow(try i.bind(":b", to: URL(string: "https://github.com/ahti/SQLeleCoder")!))
+        assertNoThrow(try i.bind(":c", to: DataAndDate(data: Data(), date: Date(timeIntervalSince1970: 42))))
+        assertNoThrow(try i.bind(":d", to: CodableEnum.wellActually))
+        _ = assertNoThrow(try i.step())
+
+        let f = assertNoThrow(try db.prepare("select * from Stuff"))
+        let r = assertNoThrow(try f.step())!
+        XCTAssertEqual(try r.column("a"), Date(timeIntervalSince1970: 16))
+        XCTAssertEqual(try r.column("b"), URL(string: "https://github.com/ahti/SQLeleCoder")!)
+        let c = assertNoThrow(try r.column("c")!) as DataAndDate
+        XCTAssertEqual(c.data, Data())
+        XCTAssertEqual(c.date, Date(timeIntervalSince1970: 42))
+        XCTAssertEqual(try r.column("d"), CodableEnum.wellActually)
+    }
+
     static var allTests = [
         ("testDataAndDate", testDataAndDate),
         ("testQueryPerformance", testQueryPerformance),
@@ -198,5 +223,6 @@ class SQLeleCoderTests: XCTestCase {
         ("testRoundtrip", testRoundtrip),
         ("testEncode", testEncode),
         ("testDecode", testDecode),
+        ("testBindAndFetchEncodables", testBindAndFetchEncodables),
     ]
 }

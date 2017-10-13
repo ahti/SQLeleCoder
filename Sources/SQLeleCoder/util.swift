@@ -12,3 +12,19 @@ extension Optional {
 enum InternalError: Error {
     case needsJsonCoding
 }
+
+struct ParameterIndex: CodingKey {
+    let intValue: Int?
+    init(_ int: Int) { intValue = int }
+    init?(intValue: Int) { fatalError() }
+    init?(stringValue: String) { fatalError() }
+    var stringValue: String { fatalError() }
+}
+
+struct ParameterName: CodingKey {
+    let stringValue: String
+    init(_ str: String) { stringValue = str }
+    init?(stringValue: String) { fatalError() }
+    var intValue: Int? { fatalError() }
+    init?(intValue: Int) { fatalError() }
+}
