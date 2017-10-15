@@ -238,13 +238,21 @@ class StatementEncoder: Encoder {
 
     func _bindEncodable<T: Encodable>(_ value: T, key: CodingKey) throws {
         let index = try indexForKey(key)
-        if let d = value as? Data {
+
+        // Explicitly check for and unwrap AnyEncodable, so we can accept
+        // [Encodable] parameters without the generics elsewhere.
+        var encodableValue: Encodable = value
+        while let any = encodableValue as? AnyEncodable {
+            encodableValue = any.w
+        }
+
+        if let d = encodableValue as? Data {
             try statement.bind(index, to: d)
             return
-        } else if let d = value as? Date {
+        } else if let d = encodableValue as? Date {
             try statement.bind(index, to: d.timeIntervalSince1970)
             return
-        } else if let u = value as? URL {
+        } else if let u = encodableValue as? URL {
             // we need to special case url, because JSONEncoder does, too,
             // and encodes it into a single string, but won't allow top-
             // level fragments :(

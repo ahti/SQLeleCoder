@@ -8,6 +8,21 @@ public enum SQLeleCoderError: Error {
     case integerOverflow
 }
 
+// This is used to get an arrya of query parameters into
+// the fetch(...) statement. On it's own, this wouldn't work
+// right, because types needing special treatment (e.g. Date)
+// would not get it. Thus, StatementEncoder explicitly checks
+// and unwraps AnyEncodable instances.
+struct AnyEncodable: Encodable {
+    let w: Encodable
+    init(_ codable: Encodable) {
+        w = codable
+    }
+    func encode(to encoder: Encoder) throws {
+        try w.encode(to: encoder)
+    }
+}
+
 extension Connection {
     public enum InsertError: Error {
         case noColumnsProvided
@@ -49,9 +64,10 @@ extension Connection {
         _ type: T.Type,
         from table: String? = nil,
         where whereClause: String? = nil,
+        parameters: [Encodable]? = nil,
         orderBy orderClause: String? = nil,
         userInfo: [CodingUserInfoKey: Any] = [:]
-        ) throws -> [T] {
+    ) throws -> [T] {
         var query = "SELECT * FROM \(table ?? "\(T.self)")"
         if let c = whereClause {
             query += " WHERE " + c
@@ -60,6 +76,11 @@ extension Connection {
             query += " ORDER BY " + o
         }
         let s = try prepare(query)
+        if let p = parameters {
+            for (index, param) in zip(1..., p) {
+                try s.bind(index, to: AnyEncodable(param))
+            }
+        }
         var res = [T]()
         while let row = try s.step() {
             res.append(try row.decode())

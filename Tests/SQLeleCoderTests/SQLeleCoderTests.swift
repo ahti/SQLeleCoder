@@ -156,13 +156,15 @@ class SQLeleCoderTests: XCTestCase {
 
     func testQueryBuilding() {
         let values = [
-            Test(id: UUID(), name: "something", age: 1, something: nil, arrr: [], nested: nil),
+            Test(id: UUID(), name: "something", age: 1, something: Date() - 3600, arrr: [], nested: nil),
             Test(id: UUID(), name: nil, age: 2, something: Date(), arrr: [1, 2, 3], nested: Nested(id: UUID(), some: Date(), boo: [])),
             Test(id: UUID(), name: nil, age: 3, something: nil, arrr: [], nested: nil)
         ]
         assertNoThrow(try db.insert(values))
         let res = assertNoThrow(try db.fetch(Test.self, orderBy: "age"))
         XCTAssertEqual(values, res)
+        let filterByDate = assertNoThrow(try db.fetch(Test.self, where: "something > ?", parameters: [Date() - 1800]))
+        XCTAssertEqual(filterByDate, Array(values[1...1]))
     }
 
     func testRoundtrip() {
