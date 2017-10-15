@@ -119,7 +119,7 @@ class SQLeleCoderTests: XCTestCase {
         for v in manyValues {
             try! v.encode(to: queryBuilder)
         }
-        let query = queryBuilder.query(in: "Test")!
+        let query = queryBuilder.query(in: "Test", conflictResolution: nil)!
         let s = try! db.prepare(query)
 
         measure {
@@ -137,7 +137,7 @@ class SQLeleCoderTests: XCTestCase {
         for v in manyValues {
             try! v.encode(to: queryBuilder)
         }
-        let query = queryBuilder.query(in: "Test")!
+        let query = queryBuilder.query(in: "Test", conflictResolution: nil)!
         let s = try! db.prepare(query)
 
         measureMetrics([.wallClockTime], automaticallyStartMeasuring: false) {
