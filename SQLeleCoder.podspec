@@ -23,6 +23,8 @@ Pod::Spec.new do |s|
 
     s.source_files = "Sources/**/*.swift"
 
+    s.dependency 'SQLele'
+
     s.test_spec 'Tests' do |test|
         test.source_files  = "Tests/**/*.swift"
         test.exclude_files = "Tests/LinuxMain.swift"
