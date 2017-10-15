@@ -13,20 +13,35 @@ extension Connection {
         case noColumnsProvided
     }
 
-    public func insert<Seq: Sequence>(_ values: Seq, into table: String? = nil, userInfo: [CodingUserInfoKey: Any] = [:]) throws where Seq.Element: Encodable {
+    public enum ConflictResolution: String {
+        case rollback = "ROLLBACK"
+        case abort = "ABORT"
+        case fail = "FAIL"
+        case ignore = "IGNORE"
+        case replace = "REPLACE"
+    }
+
+    public func insert<Seq: Sequence>(_ values: Seq, or conflictResolution: ConflictResolution? = nil, into table: String? = nil, userInfo: [CodingUserInfoKey: Any] = [:], inTransaction: Bool = true) throws where Seq.Element: Encodable {
         guard let first = values.first(where: { _ in true }) else {
             return
         }
         let qb = QueryBuilderEncoder(userInfo: userInfo)
         try first.encode(to: qb)
-        let query = try qb.query(in: table ?? "\(Seq.Element.self)").unwrap(or: InsertError.noColumnsProvided)
+        let query = try qb.query(in: table ?? "\(Seq.Element.self)", conflictResolution: conflictResolution).unwrap(or: InsertError.noColumnsProvided)
         let s = try prepare(query)
-        try transaction {
+        let run = {
             for v in values {
                 try s.encode(v)
                 _ = try s.step()
                 s.reset()
             }
+        }
+        if inTransaction {
+            try transaction {
+                try run()
+            }
+        } else {
+            try run()
         }
     }
 

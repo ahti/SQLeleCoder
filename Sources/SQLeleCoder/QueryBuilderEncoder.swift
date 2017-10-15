@@ -69,7 +69,7 @@ class QueryBuilderEncoder: Encoder {
         self.userInfo = userInfo
     }
 
-    func query(in table: String) -> String? {
+    func query(in table: String, conflictResolution: Connection.ConflictResolution?) -> String? {
         guard !columns.isEmpty else { return nil }
         func vars(_ prefix: String? = nil) -> String {
             let names: [String]
@@ -80,6 +80,9 @@ class QueryBuilderEncoder: Encoder {
             }
             return names.joined(separator: ", ")
         }
-        return "INSERT INTO \(table) (\(vars())) VALUES (\(vars(":")))"
+        let resString = conflictResolution.map {
+            " OR \($0.rawValue)"
+        } ?? ""
+        return "INSERT\(resString) INTO \(table) (\(vars())) VALUES (\(vars(":")))"
     }
 }
