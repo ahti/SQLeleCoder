@@ -7,101 +7,107 @@ private func wrapI<T>(_ o: T) throws -> Int64 where T: BinaryInteger {
 
 class StatementEncoder: Encoder {
     class ThrowingEncoder: Encoder {
-        init() {}
+        let e: Error
+        init(_ error: Error) { e = error }
         var codingPath: [CodingKey] = []
 
         var userInfo: [CodingUserInfoKey : Any] = [:]
 
         func container<Key>(keyedBy type: Key.Type) -> KeyedEncodingContainer<Key> where Key : CodingKey {
-            return KeyedEncodingContainer(ThrowingKeyedContainer())
+            return KeyedEncodingContainer(ThrowingKeyedContainer(e))
         }
 
         func unkeyedContainer() -> UnkeyedEncodingContainer {
-            return ThrowingUnkeyedContainer()
+            return ThrowingUnkeyedContainer(e)
         }
 
         func singleValueContainer() -> SingleValueEncodingContainer {
-            return ThrowingSingleContainer()
+            return ThrowingSingleContainer(e)
         }
 
 
     }
     class ThrowingSingleContainer: SingleValueEncodingContainer {
+        let e: Error
+        init(_ error: Error) { e = error }
         var codingPath: [CodingKey] = []
-        func encodeNil() throws { throw InternalError.needsJsonCoding }
-        func encode(_ value: Bool) throws { throw InternalError.needsJsonCoding }
-        func encode(_ value: Int) throws { throw InternalError.needsJsonCoding }
-        func encode(_ value: Int8) throws { throw InternalError.needsJsonCoding }
-        func encode(_ value: Int16) throws { throw InternalError.needsJsonCoding }
-        func encode(_ value: Int32) throws { throw InternalError.needsJsonCoding }
-        func encode(_ value: Int64) throws { throw InternalError.needsJsonCoding }
-        func encode(_ value: UInt) throws { throw InternalError.needsJsonCoding }
-        func encode(_ value: UInt8) throws { throw InternalError.needsJsonCoding }
-        func encode(_ value: UInt16) throws { throw InternalError.needsJsonCoding }
-        func encode(_ value: UInt32) throws { throw InternalError.needsJsonCoding }
-        func encode(_ value: UInt64) throws { throw InternalError.needsJsonCoding }
-        func encode(_ value: Float) throws { throw InternalError.needsJsonCoding }
-        func encode(_ value: Double) throws { throw InternalError.needsJsonCoding }
-        func encode(_ value: String) throws { throw InternalError.needsJsonCoding }
-        func encode<T>(_ value: T) throws where T : Encodable { throw InternalError.needsJsonCoding }
+        func encodeNil() throws { throw e }
+        func encode(_ value: Bool) throws { throw e }
+        func encode(_ value: Int) throws { throw e }
+        func encode(_ value: Int8) throws { throw e }
+        func encode(_ value: Int16) throws { throw e }
+        func encode(_ value: Int32) throws { throw e }
+        func encode(_ value: Int64) throws { throw e }
+        func encode(_ value: UInt) throws { throw e }
+        func encode(_ value: UInt8) throws { throw e }
+        func encode(_ value: UInt16) throws { throw e }
+        func encode(_ value: UInt32) throws { throw e }
+        func encode(_ value: UInt64) throws { throw e }
+        func encode(_ value: Float) throws { throw e }
+        func encode(_ value: Double) throws { throw e }
+        func encode(_ value: String) throws { throw e }
+        func encode<T>(_ value: T) throws where T : Encodable { throw e }
     }
 
     class ThrowingUnkeyedContainer: UnkeyedEncodingContainer {
+        let e: Error
+        init(_ error: Error) { e = error }
         var codingPath: [CodingKey] = []
         var count: Int = 0
-        func encode(_ value: Int) throws { throw InternalError.needsJsonCoding }
-        func encode(_ value: Int8) throws { throw InternalError.needsJsonCoding }
-        func encode(_ value: Int16) throws { throw InternalError.needsJsonCoding }
-        func encode(_ value: Int32) throws { throw InternalError.needsJsonCoding }
-        func encode(_ value: Int64) throws { throw InternalError.needsJsonCoding }
-        func encode(_ value: UInt) throws { throw InternalError.needsJsonCoding }
-        func encode(_ value: UInt8) throws { throw InternalError.needsJsonCoding }
-        func encode(_ value: UInt16) throws { throw InternalError.needsJsonCoding }
-        func encode(_ value: UInt32) throws { throw InternalError.needsJsonCoding }
-        func encode(_ value: UInt64) throws { throw InternalError.needsJsonCoding }
-        func encode(_ value: Float) throws { throw InternalError.needsJsonCoding }
-        func encode(_ value: Double) throws { throw InternalError.needsJsonCoding }
-        func encode(_ value: String) throws { throw InternalError.needsJsonCoding }
-        func encode<T>(_ value: T) throws where T : Encodable { throw InternalError.needsJsonCoding }
-        func encode(_ value: Bool) throws { throw InternalError.needsJsonCoding }
-        func encodeNil() throws { throw InternalError.needsJsonCoding }
-        func nestedContainer<NestedKey>(keyedBy keyType: NestedKey.Type) -> KeyedEncodingContainer<NestedKey> where NestedKey : CodingKey { return KeyedEncodingContainer(ThrowingKeyedContainer<NestedKey>())  }
+        func encode(_ value: Int) throws { throw e }
+        func encode(_ value: Int8) throws { throw e }
+        func encode(_ value: Int16) throws { throw e }
+        func encode(_ value: Int32) throws { throw e }
+        func encode(_ value: Int64) throws { throw e }
+        func encode(_ value: UInt) throws { throw e }
+        func encode(_ value: UInt8) throws { throw e }
+        func encode(_ value: UInt16) throws { throw e }
+        func encode(_ value: UInt32) throws { throw e }
+        func encode(_ value: UInt64) throws { throw e }
+        func encode(_ value: Float) throws { throw e }
+        func encode(_ value: Double) throws { throw e }
+        func encode(_ value: String) throws { throw e }
+        func encode<T>(_ value: T) throws where T : Encodable { throw e }
+        func encode(_ value: Bool) throws { throw e }
+        func encodeNil() throws { throw e }
+        func nestedContainer<NestedKey>(keyedBy keyType: NestedKey.Type) -> KeyedEncodingContainer<NestedKey> where NestedKey : CodingKey { return KeyedEncodingContainer(ThrowingKeyedContainer<NestedKey>(e))  }
         func nestedUnkeyedContainer() -> UnkeyedEncodingContainer { return self }
-        func superEncoder() -> Encoder { return ThrowingEncoder() }
+        func superEncoder() -> Encoder { return ThrowingEncoder(e) }
     }
 
     class ThrowingKeyedContainer<KeyType: CodingKey>: KeyedEncodingContainerProtocol {
-        init() {}
+        let e: Error
+        init(_ error: Error) { e = error }
         typealias Key = KeyType
         var codingPath: [CodingKey] = []
-        func encodeNil(forKey key: KeyType) throws { throw InternalError.needsJsonCoding }
-        func encode(_ value: Bool, forKey key: KeyType) throws { throw InternalError.needsJsonCoding }
-        func encode(_ value: Int, forKey key: KeyType) throws { throw InternalError.needsJsonCoding }
-        func encode(_ value: Int8, forKey key: KeyType) throws { throw InternalError.needsJsonCoding }
-        func encode(_ value: Int16, forKey key: KeyType) throws { throw InternalError.needsJsonCoding }
-        func encode(_ value: Int32, forKey key: KeyType) throws { throw InternalError.needsJsonCoding }
-        func encode(_ value: Int64, forKey key: KeyType) throws { throw InternalError.needsJsonCoding }
-        func encode(_ value: UInt, forKey key: KeyType) throws { throw InternalError.needsJsonCoding }
-        func encode(_ value: UInt8, forKey key: KeyType) throws { throw InternalError.needsJsonCoding }
-        func encode(_ value: UInt16, forKey key: KeyType) throws { throw InternalError.needsJsonCoding }
-        func encode(_ value: UInt32, forKey key: KeyType) throws { throw InternalError.needsJsonCoding }
-        func encode(_ value: UInt64, forKey key: KeyType) throws { throw InternalError.needsJsonCoding }
-        func encode(_ value: Float, forKey key: KeyType) throws { throw InternalError.needsJsonCoding }
-        func encode(_ value: Double, forKey key: KeyType) throws { throw InternalError.needsJsonCoding }
-        func encode(_ value: String, forKey key: KeyType) throws { throw InternalError.needsJsonCoding }
-        func encode<T>(_ value: T, forKey key: KeyType) throws where T : Encodable { throw InternalError.needsJsonCoding }
+        func encodeNil(forKey key: KeyType) throws { throw e }
+        func encode(_ value: Bool, forKey key: KeyType) throws { throw e }
+        func encode(_ value: Int, forKey key: KeyType) throws { throw e }
+        func encode(_ value: Int8, forKey key: KeyType) throws { throw e }
+        func encode(_ value: Int16, forKey key: KeyType) throws { throw e }
+        func encode(_ value: Int32, forKey key: KeyType) throws { throw e }
+        func encode(_ value: Int64, forKey key: KeyType) throws { throw e }
+        func encode(_ value: UInt, forKey key: KeyType) throws { throw e }
+        func encode(_ value: UInt8, forKey key: KeyType) throws { throw e }
+        func encode(_ value: UInt16, forKey key: KeyType) throws { throw e }
+        func encode(_ value: UInt32, forKey key: KeyType) throws { throw e }
+        func encode(_ value: UInt64, forKey key: KeyType) throws { throw e }
+        func encode(_ value: Float, forKey key: KeyType) throws { throw e }
+        func encode(_ value: Double, forKey key: KeyType) throws { throw e }
+        func encode(_ value: String, forKey key: KeyType) throws { throw e }
+        func encode<T>(_ value: T, forKey key: KeyType) throws where T : Encodable { throw e }
         func nestedContainer<NestedKey>(keyedBy keyType: NestedKey.Type, forKey key: KeyType) -> KeyedEncodingContainer<NestedKey> where NestedKey : CodingKey {
-            return KeyedEncodingContainer(ThrowingKeyedContainer<NestedKey>())
+            return KeyedEncodingContainer(ThrowingKeyedContainer<NestedKey>(e))
         }
         func nestedUnkeyedContainer(forKey key: KeyType) -> UnkeyedEncodingContainer {
-            return ThrowingUnkeyedContainer()
+            return ThrowingUnkeyedContainer(e)
         }
         func superEncoder() -> Encoder {
-            fatalError()
+            return ThrowingEncoder(e)
         }
 
         func superEncoder(forKey key: KeyType) -> Encoder {
-            fatalError()
+            return ThrowingEncoder(e)
         }
     }
 
@@ -205,7 +211,7 @@ class StatementEncoder: Encoder {
         case 0: return KeyedEncodingContainer(Container(enc: self))
         case 1:
             nestedNonSingleValueContainerRequested = true
-            return KeyedEncodingContainer(ThrowingKeyedContainer<Key>())
+            return KeyedEncodingContainer(ThrowingKeyedContainer<Key>(InternalError.needsJsonCoding))
         case _: fatalError()
         }
     }
@@ -213,7 +219,7 @@ class StatementEncoder: Encoder {
     func unkeyedContainer() -> UnkeyedEncodingContainer {
         guard codingPath.count == 1 else { fatalError() }
         nestedNonSingleValueContainerRequested = true
-        return ThrowingUnkeyedContainer()
+        return ThrowingUnkeyedContainer(InternalError.needsJsonCoding)
     }
 
     func singleValueContainer() -> SingleValueEncodingContainer {
