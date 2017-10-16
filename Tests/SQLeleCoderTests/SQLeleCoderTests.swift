@@ -165,6 +165,8 @@ class SQLeleCoderTests: XCTestCase {
         XCTAssertEqual(values, res)
         let filterByDate = assertNoThrow(try db.fetch(Test.self, where: "something > ?", parameters: [Date() - 1800]))
         XCTAssertEqual(filterByDate, Array(values[1...1]))
+        let shouldBeEmpty = assertNoThrow(try db.fetch(Test.self, where: "something < ?", parameters: [Date() - 1800]))
+        XCTAssertEqual(shouldBeEmpty, Array(values[0...0]))
     }
 
     func testRoundtrip() {
