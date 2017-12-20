@@ -130,40 +130,40 @@ class StatementEncoder: Encoder {
         }
 
         func encodeNil() throws { try s.bindNull(i()) }
-        func encode(_ value: Bool) throws   { try s.bind(i(), to: Int64(value ? 1 : 0)) }
-        func encode(_ value: Int) throws    { try s.bind(i(), to: wrapI(value)) }
-        func encode(_ value: Int8) throws   { try s.bind(i(), to: wrapI(value)) }
-        func encode(_ value: Int16) throws  { try s.bind(i(), to: wrapI(value)) }
-        func encode(_ value: Int32) throws  { try s.bind(i(), to: wrapI(value)) }
-        func encode(_ value: Int64) throws  { try s.bind(i(), to: value) }
-        func encode(_ value: UInt) throws   { try s.bind(i(), to: wrapI(value)) }
-        func encode(_ value: UInt8) throws  { try s.bind(i(), to: wrapI(value)) }
-        func encode(_ value: UInt16) throws { try s.bind(i(), to: wrapI(value)) }
-        func encode(_ value: UInt32) throws { try s.bind(i(), to: wrapI(value)) }
-        func encode(_ value: UInt64) throws { try s.bind(i(), to: wrapI(value)) }
-        func encode(_ value: Float) throws  { try s.bind(i(), to: Double(value)) }
-        func encode(_ value: Double) throws { try s.bind(i(), to: value) }
-        func encode(_ value: String) throws { try s.bind(i(), to: value) }
+        func encode(_ value: Bool) throws   { try s.bind(Int64(value ? 1 : 0), to: i()) }
+        func encode(_ value: Int) throws    { try s.bind(wrapI(value), to: i()) }
+        func encode(_ value: Int8) throws   { try s.bind(wrapI(value), to: i()) }
+        func encode(_ value: Int16) throws  { try s.bind(wrapI(value), to: i()) }
+        func encode(_ value: Int32) throws  { try s.bind(wrapI(value), to: i()) }
+        func encode(_ value: Int64) throws  { try s.bind(value, to: i()) }
+        func encode(_ value: UInt) throws   { try s.bind(wrapI(value), to: i()) }
+        func encode(_ value: UInt8) throws  { try s.bind(wrapI(value), to: i()) }
+        func encode(_ value: UInt16) throws { try s.bind(wrapI(value), to: i()) }
+        func encode(_ value: UInt32) throws { try s.bind(wrapI(value), to: i()) }
+        func encode(_ value: UInt64) throws { try s.bind(wrapI(value), to: i()) }
+        func encode(_ value: Float) throws  { try s.bind(Double(value), to: i()) }
+        func encode(_ value: Double) throws { try s.bind(value, to: i()) }
+        func encode(_ value: String) throws { try s.bind(value, to: i()) }
         func encode<T>(_ value: T) throws where T : Encodable { try e._bindEncodable(value, key: k) }
     }
 
 
     class Container<KeyType: CodingKey>: KeyedEncodingContainerProtocol {
         func encodeNil(forKey key: KeyType) throws { try s.bindNull(p(key)) }
-        func encode(_ value: Bool, forKey key: KeyType) throws   { try s.bind(p(key), to: Int64(value ? 1 : 0)) }
-        func encode(_ value: Int, forKey key: KeyType) throws    { try s.bind(p(key), to: wrapI(value)) }
-        func encode(_ value: Int8, forKey key: KeyType) throws   { try s.bind(p(key), to: wrapI(value)) }
-        func encode(_ value: Int16, forKey key: KeyType) throws  { try s.bind(p(key), to: wrapI(value)) }
-        func encode(_ value: Int32, forKey key: KeyType) throws  { try s.bind(p(key), to: wrapI(value)) }
-        func encode(_ value: Int64, forKey key: KeyType) throws  { try s.bind(p(key), to: value) }
-        func encode(_ value: UInt, forKey key: KeyType) throws   { try s.bind(p(key), to: wrapI(value)) }
-        func encode(_ value: UInt8, forKey key: KeyType) throws  { try s.bind(p(key), to: wrapI(value)) }
-        func encode(_ value: UInt16, forKey key: KeyType) throws { try s.bind(p(key), to: wrapI(value)) }
-        func encode(_ value: UInt32, forKey key: KeyType) throws { try s.bind(p(key), to: wrapI(value)) }
-        func encode(_ value: UInt64, forKey key: KeyType) throws { try s.bind(p(key), to: wrapI(value)) }
-        func encode(_ value: Float, forKey key: KeyType) throws  { try s.bind(p(key), to: Double(value)) }
-        func encode(_ value: Double, forKey key: KeyType) throws { try s.bind(p(key), to: value) }
-        func encode(_ value: String, forKey key: KeyType) throws { try s.bind(p(key), to: value) }
+        func encode(_ value: Bool, forKey key: KeyType) throws   { try s.bind(Int64(value ? 1 : 0), to: p(key)) }
+        func encode(_ value: Int, forKey key: KeyType) throws    { try s.bind(wrapI(value), to: p(key)) }
+        func encode(_ value: Int8, forKey key: KeyType) throws   { try s.bind(wrapI(value), to: p(key)) }
+        func encode(_ value: Int16, forKey key: KeyType) throws  { try s.bind(wrapI(value), to: p(key)) }
+        func encode(_ value: Int32, forKey key: KeyType) throws  { try s.bind(wrapI(value), to: p(key)) }
+        func encode(_ value: Int64, forKey key: KeyType) throws  { try s.bind(value, to: p(key)) }
+        func encode(_ value: UInt, forKey key: KeyType) throws   { try s.bind(wrapI(value), to: p(key)) }
+        func encode(_ value: UInt8, forKey key: KeyType) throws  { try s.bind(wrapI(value), to: p(key)) }
+        func encode(_ value: UInt16, forKey key: KeyType) throws { try s.bind(wrapI(value), to: p(key)) }
+        func encode(_ value: UInt32, forKey key: KeyType) throws { try s.bind(wrapI(value), to: p(key)) }
+        func encode(_ value: UInt64, forKey key: KeyType) throws { try s.bind(wrapI(value), to: p(key)) }
+        func encode(_ value: Float, forKey key: KeyType) throws  { try s.bind(Double(value), to: p(key)) }
+        func encode(_ value: Double, forKey key: KeyType) throws { try s.bind(value, to: p(key)) }
+        func encode(_ value: String, forKey key: KeyType) throws { try s.bind(value, to: p(key)) }
         func encode<T>(_ value: T, forKey key: KeyType) throws where T : Encodable { try enc.bindEncodable(value, key: key) }
 
         func nestedContainer<NestedKey>(keyedBy keyType: NestedKey.Type, forKey key: KeyType) -> KeyedEncodingContainer<NestedKey> where NestedKey : CodingKey {
@@ -253,16 +253,16 @@ class StatementEncoder: Encoder {
         }
 
         if let d = encodableValue as? Data {
-            try statement.bind(index, to: d)
+            try statement.bind(d, to: index)
             return
         } else if let d = encodableValue as? Date {
-            try statement.bind(index, to: d.timeIntervalSince1970)
+            try statement.bind(d.timeIntervalSince1970, to: index)
             return
         } else if let u = encodableValue as? URL {
             // we need to special case url, because JSONEncoder does, too,
             // and encodes it into a single string, but won't allow top-
             // level fragments :(
-            try statement.bind(index, to: u.absoluteString)
+            try statement.bind(u.absoluteString, to: index)
             return
         }
 
@@ -285,7 +285,7 @@ class StatementEncoder: Encoder {
             json.dateEncodingStrategy = .secondsSince1970
             let data = try json.encode(value)
             let string = String(data: data, encoding: .utf8)!
-            try statement.bind(index, to: string)
+            try statement.bind(string, to: index)
         }
     }
 

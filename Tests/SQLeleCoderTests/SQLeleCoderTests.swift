@@ -202,10 +202,10 @@ class SQLeleCoderTests: XCTestCase {
 
     func testBindAndFetchEncodables() throws {
         let i = assertNoThrow(try db.prepare("insert into Stuff values (?, :b, :c, :d)"))
-        assertNoThrow(try i.bind(1, to: Date(timeIntervalSince1970: 16)))
-        assertNoThrow(try i.bind(":b", to: URL(string: "https://github.com/ahti/SQLeleCoder")!))
-        assertNoThrow(try i.bind(":c", to: DataAndDate(data: Data(), date: Date(timeIntervalSince1970: 42))))
-        assertNoThrow(try i.bind(":d", to: CodableEnum.wellActually))
+        assertNoThrow(try i.bind(Date(timeIntervalSince1970: 16), to: 1))
+        assertNoThrow(try i.bind(URL(string: "https://github.com/ahti/SQLeleCoder")!, to: ":b"))
+        assertNoThrow(try i.bind(DataAndDate(data: Data(), date: Date(timeIntervalSince1970: 42)), to: ":c"))
+        assertNoThrow(try i.bind(CodableEnum.wellActually, to: ":d"))
         _ = assertNoThrow(try i.step())
 
         let f = assertNoThrow(try db.prepare("select * from Stuff"))

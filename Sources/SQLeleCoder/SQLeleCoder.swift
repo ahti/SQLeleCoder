@@ -71,7 +71,7 @@ extension Connection {
         let s = try prepare(query)
         if let p = parameters {
             for (index, param) in zip(1..., p) {
-                try s.bind(index, to: AnyEncodable(param))
+                try s.bind(AnyEncodable(param), to: index)
             }
         }
         var res = [T]()
@@ -101,20 +101,12 @@ extension Statement {
     }
 
 
-    public func bind<T: Encodable>(_ index: Int, to obj: T?, userInfo: [CodingUserInfoKey: Any] = [:]) throws {
-        guard let obj = obj else {
-            try bindNull(index)
-            return
-        }
+    public func bind<T: Encodable>(_ obj: T, to index: Int, userInfo: [CodingUserInfoKey: Any] = [:]) throws {
         let encoder = StatementEncoder(statement: self, prefix: nil, userInfo: userInfo)
         try encoder.bindEncodable(obj, key: ParameterIndex(index))
     }
 
-    public func bind<T: Encodable>(_ name: String, to obj: T?, userInfo: [CodingUserInfoKey: Any] = [:]) throws {
-        guard let obj = obj else {
-            try bindNull(name)
-            return
-        }
+    public func bind<T: Encodable>(_ obj: T, to name: String, userInfo: [CodingUserInfoKey: Any] = [:]) throws {
         let encoder = StatementEncoder(statement: self, prefix: nil, userInfo: userInfo)
         try encoder.bindEncodable(obj, key: ParameterName(name))
     }
