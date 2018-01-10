@@ -23,7 +23,7 @@ Pod::Spec.new do |s|
 
     s.source_files = "Sources/**/*.swift"
 
-    s.dependency 'SQLele'
+    s.dependency 'SQLele', '~> 0.0.1'
 
     s.test_spec 'Tests' do |test|
         test.source_files  = "Tests/**/*.swift"
