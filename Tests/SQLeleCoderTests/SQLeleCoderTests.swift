@@ -202,6 +202,7 @@ class SQLeleCoderTests: XCTestCase {
 
     func testBindAndFetchEncodables() throws {
         let i = assertNoThrow(try db.prepare("insert into Stuff values (?, :b, :c, :d)"))
+        assertNoThrow(try i.bind(DataAndDate(data: Data(), date: Date(timeIntervalSince1970: 42)), to: 1))
         assertNoThrow(try i.bind(Date(timeIntervalSince1970: 16), to: 1))
         assertNoThrow(try i.bind(URL(string: "https://github.com/ahti/SQLeleCoder")!, to: ":b"))
         assertNoThrow(try i.bind(DataAndDate(data: Data(), date: Date(timeIntervalSince1970: 42)), to: ":c"))
