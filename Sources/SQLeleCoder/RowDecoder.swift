@@ -62,7 +62,7 @@ class RowDecoder: Decoder {
         }
 
         var allKeys: [KeyType] {
-            return row.columnNames.flatMap { Key(stringValue: $0) }
+            return row.columnNames.compactMap { Key(stringValue: $0) }
         }
 
         func contains(_ key: KeyType) -> Bool {
